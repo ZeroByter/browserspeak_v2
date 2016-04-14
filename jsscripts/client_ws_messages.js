@@ -1,49 +1,47 @@
-var ws_messages = []
+socket.on("get_own_info", function(msg){
+	username = msg.username
+	own_id = msg.uid
+	is_admin = msg.is_admin
+})
 
-ws_messages["get_own_info"] = function(ws_msg){
-	username = ws_msg.client_info.username
-	own_id = ws_msg.client_info.uid
-	is_admin = ws_msg.client_info.is_admin
-}
+socket.on("kick_message", function(msg){
+	alert(msg.message)
+})
 
-ws_messages["kick_message"] = function(ws_msg){
-	alert(ws_msg.message)
-}
+socket.on("system_message", function(msg){
+	add_chat("system", "", msg.message)
+})
 
-ws_messages["system_message"] = function(ws_msg){
-	add_chat("system", "", ws_msg.message)
-}
+socket.on("private_message", function(msg){
+	add_chat("private", msg.username, msg.message)
+})
 
-ws_messages["private_message"] = function(ws_msg){
-	add_chat("private", ws_msg.username, ws_msg.message)
-}
+socket.on("global_message", function(msg){
+	add_chat("global", msg.username, msg.message)
+})
 
-ws_messages["global_message"] = function(ws_msg){
-	add_chat("global", ws_msg.username, ws_msg.message)
-}
+socket.on("error_message", function(msg){
+	add_chat("error", "", msg.message)
+})
 
-ws_messages["error_message"] = function(ws_msg){
-	add_chat("error", "", ws_msg.message)
-}
+socket.on("user_message", function(msg){
+	add_chat("user", msg.username, msg.message)
+})
 
-ws_messages["user_message"] = function(ws_msg){
-	add_chat("user", ws_msg.username, ws_msg.message)
-}
-
-ws_messages["change_channel_name"] = function(ws_msg){
+socket.on("change_channel_name", function(msg){
 	$(".channel").each(function(){
-		if($(this).data("id") == ws_msg.id){
-			$(this).html(ws_msg.name)
+		if($(this).data("id") == msg.id){
+			$(this).html(msg.name)
 		}
 	})
-}
+})
 
-ws_messages["get_channels"] = function(ws_msg){
-	own_channel_id = ws_msg.active_channel
+socket.on("get_channels", function(msg){
+	own_channel_id = msg.active_channel
 	
 	var array = []
 	
-	$.each(ws_msg.channels, function(i, v){
+	$.each(msg.channels, function(i, v){
 		array[i] = new Array()
 		array[i]["id"] = v["id"]
 		array[i]["name"] = v["name"]
@@ -59,118 +57,118 @@ ws_messages["get_channels"] = function(ws_msg){
 	})
 	
 	$.each(array, function(i, v){
-		add_channel(v["name"], v["listorder"], v["id"], v["id"] == ws_msg.active_channel, v)
+		add_channel(v["name"], v["listorder"], v["id"], v["id"] == msg.active_channel, v)
 	})
-}
+})
 
-ws_messages["get_users_in_channel"] = function(ws_msg){
-	clear_channel_users(ws_msg.channel)
-	$.each(ws_msg.users, function(i, v){
-		add_user_to_channel(ws_msg.channel, {
+socket.on("get_users_in_channel", function(msg){
+	clear_channel_users(msg.channel)
+	$.each(msg.users, function(i, v){
+		add_user_to_channel(msg.channel, {
 			"id": v["id"],
 			"name": v["username"],
 			"is_admin": v["is_admin"],
 		})
 	})
-}
+})
 
-ws_messages["get_users_in_channels"] = function(ws_msg){
-	$.each(ws_msg.users, function(i, v){
+socket.on("get_users_in_channels", function(msg){
+	$.each(msg.users, function(i, v){
 		add_user_to_channel(v["channel"], {
 			"id": v["id"],
 			"name": v["username"],
 			"is_admin": v["is_admin"],
 		})
 	})
-}
+})
 
-ws_messages["user_change_channel"] = function(ws_msg){
-	clear_channel_users(ws_msg.channel)
-	$.each(ws_msg.users, function(i, v){
-		add_user_to_channel(ws_msg.channel, {
+socket.on("user_change_channel", function(msg){
+	clear_channel_users(msg.channel)
+	$.each(msg.users, function(i, v){
+		add_user_to_channel(msg.channel, {
 			"id": v["id"],
 			"name": v["username"],
 			"is_admin": v["is_admin"],
 		})
 	})
-}
+})
 
-ws_messages["client_active_channel"] = function(ws_msg){
+socket.on("client_active_channel", function(msg){
 	$(".active_channel").removeClass("active_channel")
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == ws_msg.channel){
+		if($(this).data("id") == msg.channel){
 			$(this).addClass("active_channel")
-			own_channel_id = ws_msg.channel
+			own_channel_id = msg.channel
 		}
 	})
-}
+})
 
-ws_messages["user_change_name"] = function(ws_msg){
-	user_change_name(ws_msg.id, ws_msg.new_name)
-}
+socket.on("user_change_name", function(msg){
+	user_change_name(msg.id, msg.new_name)
+})
 
-ws_messages["user_connected"] = function(ws_msg){
-	add_user_to_channel(ws_msg.channel_id, {
-		"id": ws_msg.id,
-		"name": ws_msg.username,
-		"is_admin": ws_msg.is_admin,
+socket.on("user_connected", function(msg){
+	add_user_to_channel(msg.channel_id, {
+		"id": msg.id,
+		"name": msg.username,
+		"is_admin": msg.is_admin,
 	})
-}
+})
 
-ws_messages["add_channel_after"] = function(ws_msg){
-	insert_channel_after(ws_msg.after_order, ws_msg.name, ws_msg.listorder, ws_msg.id, ws_msg.is_secure)
-}
+socket.on("add_channel_after", function(msg){
+	insert_channel_after(msg.after_order, msg.name, msg.listorder, msg.id, msg.is_secure)
+})
 
-ws_messages["make_channel_default"] = function(ws_msg){
+socket.on("make_channel_default", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == ws_msg.id){
+		if($(this).data("id") == msg.id){
 			$(this).data("is-default", "1")
 		}else{
 			$(this).data("is-default", "0")
 		}
 	})
-}
+})
 
-ws_messages["change_channel_password"] = function(ws_msg){
+socket.on("change_channel_password", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == ws_msg.id){
+		if($(this).data("id") == msg.id){
 			$(this).data("requires-password", "1")
 		}
 	})
-}
+})
 
-ws_messages["remove_channel_password"] = function(ws_msg){
+socket.on("remove_channel_password", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == ws_msg.id){
+		if($(this).data("id") == msg.id){
 			$(this).data("requires-password", "0")
 		}
 	})
-}
+})
 
-ws_messages["toggle_admin_enter_only"] = function(ws_msg){
+socket.on("toggle_admin_enter_only", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == ws_msg.id){
-			$(this).data("enter-admin-only", ws_msg.state)
+		if($(this).data("id") == msg.id){
+			$(this).data("enter-admin-only", msg.state)
 		}
 	})
-}
+})
 
-ws_messages["toggle_subscribe_enter_only"] = function(ws_msg){
+socket.on("toggle_subscribe_enter_only", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == ws_msg.id){
-			$(this).data("subscribe-admin-only", ws_msg.state)
+		if($(this).data("id") == msg.id){
+			$(this).data("subscribe-admin-only", msg.state)
 		}
 	})
-}
+})
 
-ws_messages["remove_channel"] = function(ws_msg){
-	remove_channel(ws_msg.id)
-}
+socket.on("remove_channel", function(msg){
+	remove_channel(msg.id)
+})
 
-ws_messages["remove_user"] = function(ws_msg){
-	remove_user(ws_msg.id)
-}
+socket.on("remove_user", function(msg){
+	remove_user(msg.id)
+})
 
-ws_messages["clear_channel_users"] = function(ws_msg){
-	clear_channel_users(ws_msg.channel)
-}
+socket.on("clear_channel_users", function(msg){
+	clear_channel_users(msg.channel)
+})

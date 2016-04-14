@@ -52,9 +52,10 @@ io.on("connection", function(socket){
 	console.log(" - user indentity from client: " + getCookieFromString(socket.handshake.headers.cookie, "user_identity"))
 	console.log(" - user username from client: " + getCookieFromString(socket.handshake.headers.cookie, "username"))
 	console.log(" - user username received from mysql db: ")
-	/*socket.on("websocket message??", function(msg){
-		
-	})*/
+	
+	socket.on("get_own_info", function(msg){
+		console.log("test")
+	})
 })
 
 function getCookieFromString(cstring, cname){

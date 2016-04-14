@@ -11,64 +11,20 @@ var own_id = 0 //The user ID for ourselfs
 var own_channel_id = 0
 var is_admin = false
 
-//TO-DO: Convert *all* clientside code from use of default API websockets to socket.io code
-
-socket.onopen = function(){ //How the fuck are you supposed to detect when the socket opens?!
-	alert("socket open test")
-}
-
-websocket.onopen = function(){ //When the websocket connection opens
+socket.on("connect", function(){
 	add_chat("system", "", "Connected to server")
 	var i = 0
 	
-	setTimeout(function(){
-		var ws_msg = {
-			type: "get_own_info",
-		}
-		websocket.send(JSON.stringify(ws_msg))
-	}, i*100)
-	
-	i++
-	setTimeout(function(){
-		var ws_msg = {
-			type: "get_channels",
-		}
-		websocket.send(JSON.stringify(ws_msg))
-	}, i*100)
-	
-	i++
-	setTimeout(function(){
-		var ws_msg = {
-			type: "get_users_in_channels",
-		}
-		websocket.send(JSON.stringify(ws_msg))
-	}, i*100)
-}
+	socket.emit("get_own_info")
+	socket.emit("get_channels")
+	socket.emit("get_users_in_channels")
+})
 
-websocket.onerror = function(){ //When the websocket connection crashes
-	add_chat("system", "", "Connection error")
-}
-
-websocket.onclose = function(event){ //When the websocket connection closes
-	var reason = []
-	reason[1000] = ""
-	reason[1001] = " (going away)"
-	reason[1006] = " (server timed out)"
-	reason[1011] = " (internal server error)"
-	var reason_string = reason[event.code] || ""
-	add_chat("system", "", "Connection closed!" + reason_string)
+socket.on("disconnect", function(){
+	add_chat("system", "", "Connection closed!")
 	
 	$("#channels_div").html("<br><br><font color=\"red\">Connection closed!</font>")
-}
-
-websocket.onmessage = function(event){ //When a websocket message is received
-	var ws_msg = JSON.parse(event.data)
-	var type = ws_msg.type
-	
-	console.log("message received -- type: " + type)
-	
-	ws_messages[type](ws_msg)
-}
+})
 
 function add_channel(name, listorder, id, active_channel, channel_info){ //Add a channel to the channels div
 	var active_channel_str = ""
@@ -193,20 +149,16 @@ $("body").on("dblclick", ".channel:not(.active_channel)", function(){
 		if($(this).data("requires-password")){
 			var password = prompt("Please enter password")
 			if(password){
-				var ws_msg = {
-					type: "user_change_channel",
+				socket.emit("user_change_channel", {
 					channel: $(this).data("id"),
 					password: password,
-				}
-				websocket.send(JSON.stringify(ws_msg))
+				})
 			}
 		}else{
-			var ws_msg = {
-				type: "user_change_channel",
+			socket.emit("user_change_channel", {
 				channel: $(this).data("id"),
 				password: "",
-			}
-			websocket.send(JSON.stringify(ws_msg))
+			})
 		}
 	}
 })
@@ -217,10 +169,7 @@ $("body").mousedown(function(e){
 })
 
 $("#disconnect").click(function(){
-	var ws_msg = {
-		type: "user_disconnect"
-	}
-	websocket.send(JSON.stringify(ws_msg))
+	socket.emit("user_disconnect")
 	setTimeout(function(){
 		window.location = "/"
 	}, 3000)
@@ -248,11 +197,7 @@ $("#chat_input").bind("keypress", function(e){ //When a user sends a message via
 			if(command == "username"){ //Set username command
 				if(args_string.length < 48){
 					if(args_string.length >= username_min_length){
-						var ws_msg = {
-							type: "user_change_name",
-							name: args_string,
-						}
-						websocket.send(JSON.stringify(ws_msg))
+						socket.emit("user_change_name", {name: args_string})
 						
 						add_chat("system", "", "Username set to '" + args_string + "' (" + args_string.length + ")")
 						username = args_string
@@ -271,29 +216,17 @@ $("#chat_input").bind("keypress", function(e){ //When a user sends a message via
 				}
 			}
 			if(command == "global"){ //Global chat command
-				var ws_msg = {
-					type: "global_message",
-					message: args_string,
-				}
-				websocket.send(JSON.stringify(ws_msg))
+				socket.emit("global_message", {message: args_string})
 				$("#chat_input").val("")
 				return
 			}
 			if(command == "kick"){ //Kick chat command
-				var ws_msg = {
-					type: "kick_user",
-					target_name: args_string,
-				}
-				websocket.send(JSON.stringify(ws_msg))
+				socket.emit("kick_user", {target_name: args_string})
 				$("#chat_input").val("")
 				return
 			}
 			if(command == "bring"){ //Global chat command
-				var ws_msg = {
-					type: "bring_user",
-					target_name: args_string,
-				}
-				websocket.send(JSON.stringify(ws_msg))
+				socket.emit("bring_user", {target_name: args_string})
 				$("#chat_input").val("")
 				return
 			}
@@ -305,32 +238,13 @@ $("#chat_input").bind("keypress", function(e){ //When a user sends a message via
 					delete name[i]
 				})
 				name = name.join(" ")
-				var ws_msg = {
-					type: "change_channel_name",
+				socket.emit("change_channel_name", {
 					id: args[0],
 					name: name,
-				}
-				websocket.send(JSON.stringify(ws_msg))
+				})
 				$("#chat_input").val("")
 				return
 			}
-			/*if(command == "add_channel_after"){ //Change channel name chat command
-				var name = args_string.split(" ")
-				delete name[0]
-				$.each(name, function(i, v){
-					name[i-1] = v
-					delete name[i]
-				})
-				name = name.join(" ")
-				var ws_msg = {
-					type: "add_channel_after",
-					id: args[0],
-					name: name,
-				}
-				websocket.send(JSON.stringify(ws_msg))
-				$("#chat_input").val("")
-				return
-			}*/
 			if(command == "pmsg"){ //Private message command
 				var message = args_string.split(" ")
 				delete message[0]
@@ -339,20 +253,15 @@ $("#chat_input").bind("keypress", function(e){ //When a user sends a message via
 					delete message[i]
 				})
 				message = message.join(" ")
-				var ws_msg = {
-					type: "pmsg_user",
+				socket.emit("pmsg_user", {
 					message: message,
 					target_name: args[0],
-				}
-				websocket.send(JSON.stringify(ws_msg))
+				})
 				$("#chat_input").val("")
 				return
 			}
 			if(command == "test"){ //test command
-				var ws_msg = {
-					type: "test",
-				}
-				websocket.send(JSON.stringify(ws_msg))
+				socket.emit("test")
 				add_chat("system", "", "** test function ran **")
 				$("#chat_input").val("")
 				return
@@ -371,11 +280,7 @@ $("#chat_input").bind("keypress", function(e){ //When a user sends a message via
 			return false
 		}
 		
-		var ws_msg = {
-			type: "user_message",
-			message: input_text,
-		}
-		websocket.send(JSON.stringify(ws_msg))
+		socket.emit("user_message", {message: input_text})
 		$("#chat_input").val("")
 		return true
 	}
