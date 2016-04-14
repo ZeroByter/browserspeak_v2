@@ -1,0 +1,128 @@
+body{
+	margin: 0px;
+	font-family: arial;
+}
+
+#title{
+	position: fixed;
+	top: 5px;
+	left: 5px;
+}
+
+#disconnect{
+	position: fixed;
+	top: 5px;
+	right: 345px;
+}
+
+#channels_div{
+	background: #F8F8F8;
+	width: calc(100% - 360px);
+	height: calc(70% - 20px);
+	padding: 10px;
+	text-align: -webkit-center;
+}
+
+#chat_div{
+	width: calc(100% - 340px);
+	height: calc(30% - 33px);
+	padding-top: 4px;
+	text-align: -webkit-center;
+	overflow: auto;
+}
+
+#information_div{
+	border-left-style: solid;
+	border-color: #E1E1E1;
+	border-width: 1px;
+	padding: 6px 8px;
+	height: calc(100% - 12px);
+	width: calc(340px - 16px);
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+#chat_div p{
+	margin: 5px 0px;
+}
+
+#chat_input{
+	width: calc(100% - 340px);
+	padding: 5px 4px;
+}
+
+.channel{
+	text-decoration: underline;
+	display: block;
+	padding-top: 4px;
+	height: 20px;
+	cursor: pointer;
+}
+
+.channel:not(.active_channel){
+	color: blue;
+}
+
+.channel:hover{
+	background: linear-gradient(to bottom, rgba(46,61,232,0) 0%,rgba(125,185,232,0.72) 60%,rgba(125,185,232,1) 79%);
+	border-radius: 4px;
+	border-style: solid;
+	border-color: #BABAFF;
+	border-width: 1px;
+	padding-top: 3px;
+	margin-bottom: -1px;
+}
+
+.user{
+	cursor: pointer;
+	display: block;
+	width: 100%;
+	padding-top: 4px;
+	height: 20px;
+}
+
+.user:hover{
+	background: linear-gradient(to bottom, rgba(46,61,232,0) 0%,rgba(125,185,232,0.72) 60%,rgba(125,185,232,1) 79%);
+	border-radius: 4px;
+	border-style: solid;
+	border-color: #BABAFF;
+	border-width: 1px;
+	padding-top: 3px;
+	margin-bottom: -1px;
+	margin-left: -1px;
+}
+
+#channel_context_menu, #user_context_menu, #channel_context_submenu_permissions{
+	display: none;
+	background: #E9E9E9;
+	position: absolute;
+	top: 200px;
+	left: 400px;
+	width: 200px;
+	padding: 4px 0px;
+	box-shadow: 4px 4px 10px #888888;
+}
+
+.ctx_menu_div button{
+	padding: 0px;
+	text-align: left;
+	background: none;
+	color: none;
+	border: none;
+	display: inherit;
+	font: inherit;
+	outline: none;
+	width: 200px;
+	cursor: pointer;
+}
+
+.ctx_menu_div,.ctx_menu_submenu{
+	margin: 0px;
+	padding: 5px 4px;
+	cursor: pointer;
+}
+
+.ctx_menu_div:hover,.ctx_menu_submenu:hover{
+	background: #CFCFCF;
+}

@@ -1,0 +1,45 @@
+.miniwindow_div{
+	width: 300px;
+	padding: 0px;
+	background: white;
+	border-radius: 4px;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+	box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.4);
+	position: absolute;
+	left: 40px;
+	top: 40px;
+	display: none;
+}
+
+.miniwindow_title_div{
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-style: solid;
+	border-width: 1px;
+	width: calc(100% - 8px);
+	margin-left: -1px;
+	margin-top: -1px;
+	padding: 4px;
+	cursor: -webkit-grab;
+	margin-bottom: 6px;
+	background: #E6E6E6;
+}
+
+.miniwindow_title_div:active{
+	cursor: -webkit-grabbing;
+}
+
+.miniwindow_close_a{
+	float: right;
+	cursor: pointer;
+}
+.miniwindow_close_a:hover{
+	color: blue;
+}
+
+.miniwindow_body_div{
+	padding: 0px 5px;
+	padding-bottom: 6px;
+}
