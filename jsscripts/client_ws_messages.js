@@ -5,11 +5,11 @@ socket.on("get_own_info", function(msg){
 })
 
 socket.on("kick_message", function(msg){
-	alert(msg.message)
+	alert(msg)
 })
 
 socket.on("system_message", function(msg){
-	add_chat("system", "", msg.message)
+	add_chat("system", "", msg)
 })
 
 socket.on("private_message", function(msg){
@@ -21,7 +21,7 @@ socket.on("global_message", function(msg){
 })
 
 socket.on("error_message", function(msg){
-	add_chat("error", "", msg.message)
+	add_chat("error", "", msg)
 })
 
 socket.on("user_message", function(msg){
@@ -61,6 +61,16 @@ socket.on("get_channels", function(msg){
 	})
 })
 
+socket.on("get_users_in_channels", function(msg){
+	$.each(msg.users, function(i, v){
+		add_user_to_channel(v["channel"], {
+			"id": v["uid"],
+			"name": v["username"],
+			"is_admin": v["is_admin"],
+		})
+	})
+})
+
 socket.on("get_users_in_channel", function(msg){
 	clear_channel_users(msg.channel)
 	$.each(msg.users, function(i, v){
@@ -72,21 +82,11 @@ socket.on("get_users_in_channel", function(msg){
 	})
 })
 
-socket.on("get_users_in_channels", function(msg){
-	$.each(msg.users, function(i, v){
-		add_user_to_channel(v["channel"], {
-			"id": v["id"],
-			"name": v["username"],
-			"is_admin": v["is_admin"],
-		})
-	})
-})
-
 socket.on("user_change_channel", function(msg){
 	clear_channel_users(msg.channel)
 	$.each(msg.users, function(i, v){
 		add_user_to_channel(msg.channel, {
-			"id": v["id"],
+			"id": v["uid"],
 			"name": v["username"],
 			"is_admin": v["is_admin"],
 		})
@@ -96,15 +96,16 @@ socket.on("user_change_channel", function(msg){
 socket.on("client_active_channel", function(msg){
 	$(".active_channel").removeClass("active_channel")
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == msg.channel){
+		if($(this).data("id") == msg){
 			$(this).addClass("active_channel")
-			own_channel_id = msg.channel
+			own_channel_id = msg
 		}
 	})
 })
 
 socket.on("user_change_name", function(msg){
-	user_change_name(msg.id, msg.new_name)
+	console.log(msg)
+	user_change_name(msg.uid, msg.new_username)
 })
 
 socket.on("user_connected", function(msg){
@@ -166,9 +167,9 @@ socket.on("remove_channel", function(msg){
 })
 
 socket.on("remove_user", function(msg){
-	remove_user(msg.id)
+	remove_user(msg)
 })
 
 socket.on("clear_channel_users", function(msg){
-	clear_channel_users(msg.channel)
+	clear_channel_users(msg)
 })

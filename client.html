@@ -8,6 +8,7 @@
 <body>
 	<text id="title">Browser BrowserSpeak version 1.0</text>
 	<button id="disconnect">Disconnect from server</button>
+	<button id="toggle_sending">ALPHA Toggle sending of voice</button>
 	<div id="channels_div"></div>
 	<div id="chat_div"></div>
 	<input id="chat_input" placeholder="Click on me, type your message, and press enter to send..."></input>
@@ -15,7 +16,7 @@
 		<center>
 			<p><h1>Welcome to BrowserSpeak version 1.0!</h1></p>
 			<p>Click on any channel or user to see information about them!</p>
-			<p>If you wish to help code this project (help much needed!) please click <a href="https://github.com/zerobyter/online_browserspeak_v1" target="_blank">here!</a>.</p>
+			<p>If you wish to help code this project (help much needed!) please click <a href="https://github.com/zerobyter/browserspeak_v2" target="_blank">here!</a>.</p>
 			<p><b>Before you disconnect! Please click the disconnect button to let the webscoket server know your gone! (otherwise, just don't, eventually the server will figure out you are gone and will disconnect you automatically).</b></p>
 			<p><b><font color=red>Warning! We recommend to not use speakers and only headsets! This is due to audio still being buggy & unpredictable at times and make cause loopback sounds!</font></b></p>
 		</center>
@@ -90,3 +91,5 @@
 <script type="text/javascript" src="/jsscripts/client.js"></script>
 <script type="text/javascript" src="/jsscripts/client_ws_messages.js"></script>
 <script type="text/javascript" src="/jsscripts/client_context_functions.js"></script>
+<script type="text/javascript" src="/jsscripts/audio_receive_audio.js"></script>
+<script type="text/javascript" src="/jsscripts/audio_send_audio.js"></script>

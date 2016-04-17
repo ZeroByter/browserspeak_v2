@@ -36,7 +36,7 @@ function add_channel(name, listorder, id, active_channel, channel_info){ //Add a
 	enter_admin_only = channel_info["enter_admin_only"]
 	subscribe_admin_only = channel_info["subscribe_admin_only"]
 	requires_password = channel_info["requires_password"]
-	$("#channels_div").append("<span class=\"channel " + active_channel_str + "\" data-channel-name=\"" + name + "\" data-id=\"" + id + "\" data-listorder=\"" + listorder + "\"  data-xss-secure=\"" + is_secure + "\" data-is-default=\"" + is_default + "\" data-enter-admin-only=\"" + enter_admin_only + "\" data-subscribe-admin-only=\"" + subscribe_admin_only + "\" data-requires-password=\"" + requires_password + "\">" + name + "</span><span class=\"channel_users\" data-id=\"" + id + "\" data-listorder=\"" + listorder + "\"></span>")
+	$("#channels_div").append("<span class=\"channel " + active_channel_str + "\" data-channel-name=\"" + name + "\" data-id=\"" + id + "\" data-listorder=\"" + listorder + "\" data-is-default=\"" + is_default + "\" data-enter-admin-only=\"" + enter_admin_only + "\" data-subscribe-admin-only=\"" + subscribe_admin_only + "\" data-requires-password=\"" + requires_password + "\">" + name + "</span><span class=\"channel_users\" data-id=\"" + id + "\" data-listorder=\"" + listorder + "\"></span>")
 }
 
 function insert_channel_after(after_order, name, channel_listorder, id, is_secure){ //Add a channel to the channels div after a specific channel
@@ -169,10 +169,8 @@ $("body").mousedown(function(e){
 })
 
 $("#disconnect").click(function(){
-	socket.emit("user_disconnect")
-	setTimeout(function(){
-		window.location = "/"
-	}, 3000)
+	socket.emit("user_force_disconnect")
+	window.location = "/"
 })
 
 $("#chat_input").bind("keypress", function(e){ //When a user sends a message via the chat input box
@@ -197,7 +195,7 @@ $("#chat_input").bind("keypress", function(e){ //When a user sends a message via
 			if(command == "username"){ //Set username command
 				if(args_string.length < 48){
 					if(args_string.length >= username_min_length){
-						socket.emit("user_change_name", {name: args_string})
+						socket.emit("user_change_name", args_string)
 						
 						add_chat("system", "", "Username set to '" + args_string + "' (" + args_string.length + ")")
 						username = args_string
@@ -280,7 +278,7 @@ $("#chat_input").bind("keypress", function(e){ //When a user sends a message via
 			return false
 		}
 		
-		socket.emit("user_message", {message: input_text})
+		socket.emit("user_message", input_text)
 		$("#chat_input").val("")
 		return true
 	}

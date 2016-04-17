@@ -1,0 +1,33 @@
+<script>
+	//ripped from https://gist.github.com/ghalimi/4480204 ty very much lots of creds to him
+	function bin2hex(number, places) {
+		// Return error if number is not binary or contains more than 10 characters (10 digits)
+		if (!/^[01]{1,10}$/.test(number)) return '#NUM!';
+
+			// Ignore places and return a 10-character hexadecimal number if number is negative
+			var stringified = number.toString();
+			if (stringified.length === 10 && stringified.substring(0, 1) === '1') {
+				return (1099511627264 + parseInt(stringified.substring(1), 2)).toString(16);
+			}
+
+			// Convert binary number to hexadecimal
+			var result = parseInt(number, 2).toString(16);
+
+			// Return hexadecimal number using the minimum number of characters necessary if places is undefined
+			if (typeof places === 'undefined') {
+				return result;
+			} else {
+			// Return error if places is nonnumeric
+			if (isNaN(places)) return '#VALUE!';
+
+			// Return error if places is negative
+			if (places < 0) return '#NUM!';
+
+			// Truncate places in case it is not an integer
+			places = Math.floor(places);
+
+			// Pad return value with leading 0s (zeros) if necessary (using Underscore.string)
+			return (places >= result.length) ? _s.repeat('0', places - result.length) + result : '#NUM!';
+		}
+	}
+</script>

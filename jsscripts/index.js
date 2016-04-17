@@ -1,8 +1,8 @@
 if(getCookie("user_identity") == "" && $("#identity").val().length != 20){
-	$.get("/user/get_identity", function(data){
-		setCookie("user_identity", data, "365")
-		$("#identity").val(data)
-	})
+	var random_id = '_' + Math.random().toString(36).substr(2, 19)
+	setCookie("user_identity", random_id, "365")
+	$("#identity").val(random_id)
+	random_id = null
 }
 
 $("#identity").val(getCookie("user_identity"))
