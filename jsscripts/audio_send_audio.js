@@ -5,48 +5,51 @@ $("#toggle_sending").click(function(){
 try{
 	window.AudioContext = window.AudioContext || window.webkitAudioContext
 }catch(e){
-	alert("Web audio API is not supported in this browser")
+	console.error("Web audio API is not supported in this browser")
+	add_chat("error", "", "Web audio API is not supported in this browser")
 }
 
 try{
 	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
 	var hasMicrophoneInput = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia)
 }catch(e){
-	alert("getUserMedia() is not supported in your browser")
+	console.error("getUserMedia() is not supported in your browser")
+	add_chat("error", "", "getUserMedia() is not supported in your browser")
 }
 
-var bufferSize = 2048
+//Low: 2048, Medium: 4096, High: 8192
+if(getCookie("microphone_length") == ""){
+	var sendBufferSize = 2048
+}else{
+	var sendBufferSize = getCookie("microphone_length")
+}
 var audioContext = new AudioContext()
-
-function convertFloat32ToInt16(buffer) {
-	l = buffer.length;
-	buf = new Int16Array(l);
-	while (l--) {
-		buf[l] = Math.min(1, buffer[l])*32767;
-	}
-	return buf;
-}
 
 function myPCMFilterFunction(inputSample) {
 	var noiseSample = Math.random() * 2 - 1
 	return inputSample + noiseSample * 0
 }
 
-var myPCMProcessingNode = audioContext.createScriptProcessor(bufferSize, 1, 1)
+var myPCMProcessingNode = audioContext.createScriptProcessor(sendBufferSize, 1, 1)
+
 myPCMProcessingNode.onaudioprocess = function(e){
 	var input = e.inputBuffer.getChannelData(0)
 	var output = e.outputBuffer.getChannelData(0)
-	for(var i = 0; i < bufferSize; i++){
+	for(var i = 0; i < sendBufferSize; i++){
 		output[i] = myPCMFilterFunction(input[i])
 	}
 	
 	if(toggle_sending){
-		socket.emit("microphone_data", output)
+		socket.emit("microphone_data", {
+			audio: output,
+			audio_length: sendBufferSize,
+		})
 	}
 }
 
 var errorCallback = function(e){
-  alert("Error in getUserMedia: " + e)
+  console.error("Error in getUserMedia: " + e)
+  add_chat("error", "", "Error in getUserMedia, cant record your microphone! :(")
 }
 
 navigator.getUserMedia({audio: true}, function(stream){

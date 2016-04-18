@@ -36,3 +36,15 @@ function store_identity(username, identity, is_admin, ip){
 	})
 	mysql_connection.end()
 }
+
+function store_identity_username(identity, username){
+	identity = mysql_real_escape_string(identity)
+	username = mysql_real_escape_string(username)
+	
+	create_mysql_connection()
+	mysql_connection.connect()
+	mysql_connection.query("UPDATE identities SET username='" + username + "' WHERE identity='" + identity + "'", function(err, result){
+		
+	})
+	mysql_connection.end()
+}

@@ -11,7 +11,7 @@ function send_message_to_channel(channel, name, args){
 	for(var key in clients_info){
 		var value = clients_info[key]
 		if(value.channel == channel){
-			get_socket_by_id(value.socket).emit(name, args)
+			get_socket_by_id(value.socket).volatile.emit(name, args)
 		}
 	}
 }
@@ -21,7 +21,7 @@ function broadcast_message_to_channel(socket, channel, name, args){
 		var value = clients_info[key]
 		if(value.channel == channel){
 			if(value.socket != socket){
-				get_socket_by_id(value.socket).emit(name, args)
+				get_socket_by_id(value.socket).volatile.emit(name, args)
 			}
 		}
 	}

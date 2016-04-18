@@ -32,11 +32,14 @@ socket.on("change_channel_name", function(msg){
 	$(".channel").each(function(){
 		if($(this).data("id") == msg.id){
 			$(this).html(msg.name)
+			$(this).data("channel-name", msg.name)
 		}
 	})
 })
 
 socket.on("get_channels", function(msg){
+	$("#channels_div").html("")
+	
 	own_channel_id = msg.active_channel
 	
 	var array = []
@@ -104,7 +107,6 @@ socket.on("client_active_channel", function(msg){
 })
 
 socket.on("user_change_name", function(msg){
-	console.log(msg)
 	user_change_name(msg.uid, msg.new_username)
 })
 
@@ -122,7 +124,7 @@ socket.on("add_channel_after", function(msg){
 
 socket.on("make_channel_default", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == msg.id){
+		if($(this).data("id") == msg){
 			$(this).data("is-default", "1")
 		}else{
 			$(this).data("is-default", "0")
@@ -132,7 +134,7 @@ socket.on("make_channel_default", function(msg){
 
 socket.on("change_channel_password", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == msg.id){
+		if($(this).data("id") == msg){
 			$(this).data("requires-password", "1")
 		}
 	})
@@ -140,7 +142,7 @@ socket.on("change_channel_password", function(msg){
 
 socket.on("remove_channel_password", function(msg){
 	$(".channel").each(function(i, v){
-		if($(this).data("id") == msg.id){
+		if($(this).data("id") == msg){
 			$(this).data("requires-password", "0")
 		}
 	})
@@ -163,7 +165,7 @@ socket.on("toggle_subscribe_enter_only", function(msg){
 })
 
 socket.on("remove_channel", function(msg){
-	remove_channel(msg.id)
+	remove_channel(msg)
 })
 
 socket.on("remove_user", function(msg){

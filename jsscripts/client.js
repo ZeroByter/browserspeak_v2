@@ -173,6 +173,34 @@ $("#disconnect").click(function(){
 	window.location = "/"
 })
 
+$("#microphone_menu").click(function(){
+	miniwindow_open_window("Microphone settings", "Microphone Quality: <select id=\"mic_setting_quality\" title=\"Select the quality of the volume you send (the higher, the more lag and work the computer to has to do)\"><option>Low (2048)</option><option>Medium (4096)</option><option>High (8192)</option></select><br><br>You will have to reload the page for this to take effect!")
+	if(getCookie("microphone_length") != ""){
+		if(getCookie("microphone_length") == 2048){
+			$("#mic_setting_quality").val("Low (2048)")
+		}
+		if(getCookie("microphone_length") == 4096){
+			$("#mic_setting_quality").val("Medium (4096)")
+		}
+		if(getCookie("microphone_length") == 8192){
+			$("#mic_setting_quality").val("High (8192)")
+		}
+	}
+	$("#mic_setting_quality").bind("change", function(){
+		switch($("#mic_setting_quality option:selected").html()){
+			case "Low (2048)":
+				setCookie("microphone_length", 2048, 9999)
+			break
+			case "Medium (4096)":
+				setCookie("microphone_length", 4096, 9999)
+			break
+			case "High (8192)":
+				setCookie("microphone_length", 8192, 9999)
+			break
+		}
+	})
+})
+
 $("#chat_input").bind("keypress", function(e){ //When a user sends a message via the chat input box
 	var code = e.keyCode || e.which
 	if(code == 13){
